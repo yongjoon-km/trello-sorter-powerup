@@ -8,13 +8,17 @@ window.TrelloPowerUp.initialize({
             console.log(opts);
             // Trello will call this if the user clicks on this sort
             // opts.cards contains all card objects in the list
-            var sortedCards = opts.cards.sort(function (a, b) {
-              if (a.name > b.name) {
+            var sortedCards = opts.cards.sort((a, b) => {
+              if (a.members.length === 0) {
                 return 1;
-              } else if (b.name > a.name) {
+              }
+              if (b.members.length === 0) {
                 return -1;
               }
-              return 0;
+              if (a.members.length !== b.members.length) {
+                return b.members.length - a.members.length;
+              }
+              return a.members[0] - b.members[0];
             });
 
             return {
