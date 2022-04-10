@@ -1,25 +1,13 @@
 window.TrelloPowerUp.initialize({
   "list-sorters": function (t) {
-    return t.list("name", "id").then(function (list) {
+    return t.list("name", "id").then(() => {
       return [
         {
-          text: "Card Name",
-          callback: function (t, opts) {
-            console.log(opts);
+          text: "Members",
+          callback: (_t, opts) => {
             // Trello will call this if the user clicks on this sort
             // opts.cards contains all card objects in the list
-            var sortedCards = opts.cards.sort((a, b) => {
-              if (a.members.length === 0) {
-                return 1;
-              }
-              if (b.members.length === 0) {
-                return -1;
-              }
-              if (a.members.length !== b.members.length) {
-                return b.members.length - a.members.length;
-              }
-              return a.members[0] - b.members[0];
-            });
+            const sortedCards = opts.cards.sort(memberComparator);
 
             return {
               sortedIds: sortedCards.map(function (c) {
@@ -32,3 +20,19 @@ window.TrelloPowerUp.initialize({
     });
   },
 });
+
+function memberComparator({ members: membersA }, { members: membersB }) {
+  // if length 0, go to last
+  if (membersA.length === 0) {
+    return 1;
+  }
+  if (membersB.length === 0) {
+    return -1;
+  }
+  // bigger length go first
+  if (membersA.length !== membersB.length) {
+    return membersB.length - membersA.length;
+  }
+  // sort by member Id
+  return membersA[0] - membersB[0];
+}
